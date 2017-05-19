@@ -1,0 +1,10 @@
+[package]
+name = "fxhash"
+version = "0.1.0"
+authors = ["cbreeden <github@u.breeden.cc>"]
+
+[dependencies]
+byteorder = "*"
+
+[lib]
+path = "lib.rs"
