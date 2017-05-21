@@ -42,7 +42,7 @@ pub type FxHashSet<V> = HashSet<V, FxBuildHasher>;
 /// TODO: Reword this to be less rustc specific.
 #[derive(Debug, Clone)]
 pub struct FxHasher {
-    hash: usize
+    hash: usize,
 }
 
 impl Default for FxHasher {
@@ -68,7 +68,14 @@ impl Hasher for FxHasher {
     #[inline]
     fn write(&mut self, mut bytes: &[u8]) {
         while bytes.len() >= 4 {
-            let n = bytes.read_u32::<NE>().unwrap();
+            // I can't think of a scenario when `read_u32`
+            // will fail.  But if it does, quit trying
+            // to chunk the the hash and try byte by byte.
+            let n = match bytes.read_u32::<NE>() {
+                Ok(n) => n,
+                Err(_) => break,
+            };
+
             self.write_u32(n);
         }
 
