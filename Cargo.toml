@@ -3,8 +3,13 @@ name = "fxhash"
 version = "0.1.0"
 authors = ["cbreeden <github@u.breeden.cc>"]
 
+[lib]
+name = "fxhash"
+path = "lib.rs"
+
+[[bench]]
+name = "fxhash"
+path = "bench.rs"
+
 [dependencies]
 byteorder = "*"
-
-[lib]
-path = "lib.rs"

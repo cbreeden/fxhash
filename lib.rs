@@ -9,14 +9,14 @@
 // except according to those terms.
 
 //#![deny(missing_docs)]
-extern crate byteorder;
-use byteorder::NativeEndian as NE;
-use byteorder::ReadBytesExt;
 
 use std::collections::{HashMap, HashSet};
 use std::default::Default;
 use std::hash::{Hasher, Hash, BuildHasherDefault};
 use std::ops::BitXor;
+
+extern crate byteorder;
+use byteorder::{ByteOrder, NativeEndian};
 
 /// A builder for default Fx hashers.
 pub type FxBuildHasher = BuildHasherDefault<FxHasher>;
@@ -67,16 +67,21 @@ impl FxHasher {
 impl Hasher for FxHasher {
     #[inline]
     fn write(&mut self, mut bytes: &[u8]) {
-        while bytes.len() >= 4 {
-            // I can't think of a scenario when `read_u32`
-            // will fail.  But if it does, quit trying
-            // to chunk the the hash and try byte by byte.
-            let n = match bytes.read_u32::<NE>() {
-                Ok(n) => n,
-                Err(_) => break,
-            };
+        #[cfg(target_pointer_width = "32")]
+        fn read(buf: &[u8]) -> usize {
+            NativeEndian::read_u32(buf) as usize
+        }
 
-            self.write_u32(n);
+        #[cfg(target_pointer_width = "64")]
+        fn read(buf: &[u8]) -> usize {
+            NativeEndian::read_u64(buf) as usize
+        }
+
+        let ptr_size: usize = ::std::mem::size_of::<usize>();
+        while bytes.len() >= ptr_size {
+            let i = read(bytes);
+            self.add_to_hash(i as usize);
+            bytes = bytes.split_at(ptr_size).1;
         }
 
         for byte in bytes {
@@ -125,9 +130,13 @@ impl Hasher for FxHasher {
 }
 
 /// A helper function.
-
-pub fn hash<T: Hash>(v: &T) -> u64 {
+#[inline]
+pub fn hash<T: Hash + ?Sized>(v: &T) -> u64 {
     let mut state = FxHasher::default();
     v.hash(&mut state);
     state.finish()
+}
+
+fn test(s: &str) {
+    s.lines_any();
 }
