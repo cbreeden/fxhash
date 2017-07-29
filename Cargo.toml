@@ -1,6 +1,6 @@
 [package]
 name = "fxhash"
-version = "0.2.0"
+version = "0.2.1"
 description = "A fast, non-secure, hashing algorithm derived from an internal hasher used in FireFox and Rustc."
 documentation = "https://docs.rs/fxhash"
 repository = "https://github.com/cbreeden/fxhash"

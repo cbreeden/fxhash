@@ -86,11 +86,10 @@ fn write32(mut hash: u32, mut bytes: &[u8]) -> u32 {
 
 #[inline]
 fn write64(mut hash: u64, mut bytes: &[u8]) -> u64 {
-    let ptr_size = std::mem::size_of::<usize>();
-    while bytes.len() >= ptr_size {
+    while bytes.len() >= 8 {
         let n = NativeEndian::read_u64(bytes);
         hash.hash_word(n);
-        bytes = bytes.split_at(ptr_size).1;
+        bytes = bytes.split_at(8).1;
     }
 
     if bytes.len() >= 4 {
