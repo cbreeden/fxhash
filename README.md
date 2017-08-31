@@ -14,7 +14,7 @@ Building an Fx backed hashmap.
 extern crate fxhash;
 use fxhash::FxHashMap;
 
-let mut hashmap = FxHashMap::new();
+let mut hashmap = FxHashMap::default();
 
 hashmap.insert("black", 0);
 hashmap.insert("white", 255);
@@ -26,7 +26,7 @@ Building an Fx backed hashset.
 extern crate fxhash;
 use fxhash::FxHashSet;
 
-let mut hashmap = FxHashSet::new();
+let mut hashmap = FxHashSet::default();
 
 hashmap.insert("black");
 hashmap.insert("white");
