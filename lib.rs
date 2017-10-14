@@ -13,7 +13,7 @@
 //! # Fx Hash
 //!
 //! This hashing algorithm was extracted from the Rustc compiler.  This is the same hashing
-//! algoirthm used for some internal operations in FireFox.  The strength of this algorithm
+//! algorithm used for some internal operations in FireFox.  The strength of this algorithm
 //! is in hashing 8 bytes at a time on 64-bit platforms, where the FNV algorithm works on one
 //! byte at a time.
 //!
@@ -117,7 +117,7 @@ fn write(hash: usize, bytes: &[u8]) -> usize {
 }
 
 /// This hashing algorithm was extracted from the Rustc compiler.
-/// This is the same hashing algoirthm used for some internal operations in FireFox.
+/// This is the same hashing algorithm used for some internal operations in FireFox.
 /// The strength of this algorithm is in hashing 8 bytes at a time on 64-bit platforms,
 /// where the FNV algorithm works on one byte at a time.
 ///
@@ -181,7 +181,7 @@ impl Hasher for FxHasher {
 }
 
 /// This hashing algorithm was extracted from the Rustc compiler.
-/// This is the same hashing algoirthm used for some internal operations in FireFox.
+/// This is the same hashing algorithm used for some internal operations in FireFox.
 /// The strength of this algorithm is in hashing 8 bytes at a time on any platform,
 /// where the FNV algorithm works on one byte at a time.
 ///
@@ -236,7 +236,7 @@ impl Hasher for FxHasher64 {
 }
 
 /// This hashing algorithm was extracted from the Rustc compiler.
-/// This is the same hashing algoirthm used for some internal operations in FireFox.
+/// This is the same hashing algorithm used for some internal operations in FireFox.
 /// The strength of this algorithm is in hashing 4 bytes at a time on any platform,
 /// where the FNV algorithm works on one byte at a time.
 ///
