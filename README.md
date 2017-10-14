@@ -34,7 +34,7 @@ hashmap.insert("white");
 
 ## Benchmarks
 
-Generally `fxhash` is than `fnv` on `u32`, `u64`, or any byte sequence with length >= 5.  However, keep in mind that hashing speed is not the only characteristic worth considering.  That being said, Rustc had an observable increase in speed when switching from `fnv` backed hashmaps to `fx` based hashmaps.
+Generally `fxhash` is faster than `fnv` on `u32`, `u64`, or any byte sequence with length >= 5.  However, keep in mind that hashing speed is not the only characteristic worth considering.  That being said, Rustc had an observable increase in speed when switching from `fnv` backed hashmaps to `fx` based hashmaps.
 
     bench_fnv_003     ... bench:      3 ns/iter (+/- 0)
     bench_fnv_004     ... bench:      2 ns/iter (+/- 0)
