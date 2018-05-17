@@ -10,6 +10,10 @@
 
 #![deny(missing_docs)]
 
+// Turns on no_std and alloc features if std is not available.
+#![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(not(feature = "std"), feature(alloc))]
+
 //! # Fx Hash
 //!
 //! This hashing algorithm was extracted from the Rustc compiler.  This is the same hashing
@@ -24,6 +28,13 @@
 //! not designed to prevent any attacks for determining collisions which could be used to
 //! potentially cause quadratic behavior in `HashMap`s.  So it is not recommended to expose
 //! this hash in places where collissions or DDOS attacks may be a concern.
+
+// Include the `hashmap_core` crate if std is not available.
+#[allow(unused_extern_crates)]
+#[cfg(not(feature = "std"))]
+extern crate hashmap_core;
+#[cfg(not(feature = "std"))]
+extern crate alloc;
 
 use std::collections::{HashMap, HashSet};
 use std::default::Default;
@@ -321,4 +332,14 @@ pub fn hash<T: Hash + ?Sized>(v: &T) -> usize {
     let mut state = FxHasher::default();
     v.hash(&mut state);
     state.finish() as usize
+}
+
+/// This replaces `std` in builds with `core`.
+#[cfg(not(feature = "std"))]
+mod std {
+    pub use core::*;
+    pub mod collections {
+        pub use hashmap_core::{HashMap, HashSet};
+        pub use hashmap_core::map as hash_map;
+    }
 }
