@@ -10,9 +10,8 @@
 
 #![deny(missing_docs)]
 
-// Turns on no_std and alloc features if std is not available.
+// Turns on no_std features if std is not available.
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(not(feature = "std"), feature(alloc))]
 
 //! # Fx Hash
 //!
@@ -33,8 +32,6 @@
 #[allow(unused_extern_crates)]
 #[cfg(not(feature = "std"))]
 extern crate hashmap_core;
-#[cfg(not(feature = "std"))]
-extern crate alloc;
 
 use std::collections::{HashMap, HashSet};
 use std::default::Default;
