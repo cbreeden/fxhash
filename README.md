@@ -28,8 +28,8 @@ use fxhash::FxHashSet;
 
 let mut hashset = FxHashSet::default();
 
-hashmap.insert("black");
-hashmap.insert("white");
+hashset.insert("black");
+hashset.insert("white");
 ```
 
 ## Benchmarks
