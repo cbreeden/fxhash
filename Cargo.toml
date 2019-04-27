@@ -18,8 +18,13 @@ path = "lib.rs"
 name = "fxhash"
 path = "bench.rs"
 
-[dependencies]
-byteorder = "1.0.0"
+[features]
+default = ["std"]
+std = ["byteorder/std"]
+
+[dependencies.byteorder]
+version = "1.0.0"
+default-features = false
 
 [dev-dependencies]
 seahash = "3.0.5"

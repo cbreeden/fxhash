@@ -25,10 +25,22 @@
 //! potentially cause quadratic behavior in `HashMap`s.  So it is not recommended to expose
 //! this hash in places where collissions or DDOS attacks may be a concern.
 
+#![cfg_attr(not(feature = "std"), no_std)]
+
+#[cfg(not(feature = "std"))]
+extern crate alloc;
+
+#[cfg(feature = "std")]
+mod core {
+    pub use std::*;
+}
+
+#[cfg(feature = "std")]
 use std::collections::{HashMap, HashSet};
-use std::default::Default;
-use std::hash::{Hasher, Hash, BuildHasherDefault};
-use std::ops::BitXor;
+
+use core::default::Default;
+use core::hash::{Hasher, Hash, BuildHasherDefault};
+use core::ops::BitXor;
 
 extern crate byteorder;
 use byteorder::{ByteOrder, NativeEndian};
@@ -36,10 +48,12 @@ use byteorder::{ByteOrder, NativeEndian};
 /// A builder for default Fx hashers.
 pub type FxBuildHasher = BuildHasherDefault<FxHasher>;
 
-/// A `HashMap` using a default Fx hasher.
+#[cfg_attr(feature = "std", doc = "A `HashMap` using a default Fx hasher.")]
+#[cfg(feature = "std")]
 pub type FxHashMap<K, V> = HashMap<K, V, FxBuildHasher>;
 
-/// A `HashSet` using a default Fx hasher.
+#[cfg_attr(feature = "std", doc = "A `HashSet` using a default Fx hasher.")]
+#[cfg(feature = "std")]
 pub type FxHashSet<V> = HashSet<V, FxBuildHasher>;
 
 const ROTATE: u32 = 5;
