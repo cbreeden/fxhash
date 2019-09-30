@@ -37,9 +37,15 @@ use byteorder::{ByteOrder, NativeEndian};
 pub type FxBuildHasher = BuildHasherDefault<FxHasher>;
 
 /// A `HashMap` using a default Fx hasher.
+///
+/// Use `FxHashMap::default()`, not `new()` to create a new `FxHashMap`.
+/// To create with a reserved capacity, use `FxHashMap::with_capacity_and_hasher(num, Default::default())`.
 pub type FxHashMap<K, V> = HashMap<K, V, FxBuildHasher>;
 
 /// A `HashSet` using a default Fx hasher.
+///
+/// Note: Use `FxHashSet::default()`, not `new()` to create a new `FxHashSet`.
+/// To create with a reserved capacity, use `FxHashSet::with_capacity_and_hasher(num, Default::default())`.
 pub type FxHashSet<V> = HashSet<V, FxBuildHasher>;
 
 const ROTATE: u32 = 5;
