@@ -1,6 +1,6 @@
 # Fx Hash
 
-This hashing algorithm was extracted from the Rustc compiler.  This is the same hashing algorithm used for some internal operations in FireFox.  The strength of this algorithm is in hashing 8 bytes at a time on 64-bit platforms, where the FNV algorithm works on one byte at a time.
+This hashing algorithm was extracted from the Rustc compiler.  This is the same hashing algorithm used for some internal operations in Firefox.  The strength of this algorithm is in hashing 8 bytes at a time on 64-bit platforms, where the FNV algorithm works on one byte at a time.
 
 ## Disclaimer
 
