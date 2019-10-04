@@ -9,6 +9,7 @@
 // except according to those terms.
 
 #![deny(missing_docs)]
+#![cfg_attr(not(feature="std"), no_std)]
 
 //! # Fx Hash
 //!
@@ -25,7 +26,12 @@
 //! potentially cause quadratic behavior in `HashMap`s.  So it is not recommended to expose
 //! this hash in places where collissions or DDOS attacks may be a concern.
 
+#[cfg(not(feature="std"))]
+extern crate core as std;
+
+#[cfg(feature="std")]
 use std::collections::{HashMap, HashSet};
+
 use std::default::Default;
 use std::hash::{BuildHasherDefault, Hash, Hasher};
 use std::ops::BitXor;
@@ -36,16 +42,22 @@ use byteorder::{ByteOrder, NativeEndian};
 /// A builder for default Fx hashers.
 pub type FxBuildHasher = BuildHasherDefault<FxHasher>;
 
+#[cfg(feature="std")]
 /// A `HashMap` using a default Fx hasher.
 ///
 /// Use `FxHashMap::default()`, not `new()` to create a new `FxHashMap`.
 /// To create with a reserved capacity, use `FxHashMap::with_capacity_and_hasher(num, Default::default())`.
+///
+/// Requires crate feature "std" (enabled by default).
 pub type FxHashMap<K, V> = HashMap<K, V, FxBuildHasher>;
 
+#[cfg(feature="std")]
 /// A `HashSet` using a default Fx hasher.
 ///
 /// Note: Use `FxHashSet::default()`, not `new()` to create a new `FxHashSet`.
 /// To create with a reserved capacity, use `FxHashSet::with_capacity_and_hasher(num, Default::default())`.
+///
+/// Requires crate feature "std" (enabled by default).
 pub type FxHashSet<V> = HashSet<V, FxBuildHasher>;
 
 const ROTATE: u32 = 5;
