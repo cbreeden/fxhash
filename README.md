@@ -4,7 +4,7 @@ This hashing algorithm was extracted from the Rustc compiler.  This is the same 
 
 ## Disclaimer
 
-It is **not a cryptographically secure** hash, so it is strongly recommended that you do not use this hash for cryptographic purproses.  Furthermore, this hashing algorithm was not designed to prevent any attacks for determining collisions which could be used to potentially cause quadratic behavior in `HashMap`s.  So it is not recommended to expose this hash in places where collissions or DDOS attacks may be a concern.
+It is **not a cryptographically secure** hash, so it is strongly recommended that you do not use this hash for cryptographic purposes.  Furthermore, this hashing algorithm was not designed to prevent any attacks for determining collisions which could be used to potentially cause quadratic behavior in `HashMap`s.  So it is not recommended to expose this hash in places where collisions or DDOS attacks may be a concern.
 
 ## Examples
 
