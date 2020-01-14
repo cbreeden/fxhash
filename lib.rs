@@ -29,9 +29,7 @@ use std::collections::{HashMap, HashSet};
 use std::default::Default;
 use std::hash::{BuildHasherDefault, Hash, Hasher};
 use std::ops::BitXor;
-
-extern crate byteorder;
-use byteorder::{ByteOrder, NativeEndian};
+use std::convert::TryInto;
 
 /// A builder for default Fx hashers.
 pub type FxBuildHasher = BuildHasherDefault<FxHasher>;
@@ -79,12 +77,12 @@ impl_hash_word!(usize = SEED, u32 = SEED32, u64 = SEED64);
 #[inline]
 fn write32(mut hash: u32, mut bytes: &[u8]) -> u32 {
     while bytes.len() >= 4 {
-        hash.hash_word(NativeEndian::read_u32(bytes));
+        hash.hash_word(u32::from_ne_bytes(bytes[..4].try_into().unwrap()));
         bytes = &bytes[4..];
     }
 
     if bytes.len() >= 2 {
-        hash.hash_word(u32::from(NativeEndian::read_u16(bytes)));
+        hash.hash_word(u32::from(u16::from_ne_bytes(bytes[..2].try_into().unwrap())));
         bytes = &bytes[2..];
     }
 
@@ -98,17 +96,17 @@ fn write32(mut hash: u32, mut bytes: &[u8]) -> u32 {
 #[inline]
 fn write64(mut hash: u64, mut bytes: &[u8]) -> u64 {
     while bytes.len() >= 8 {
-        hash.hash_word(NativeEndian::read_u64(bytes));
+        hash.hash_word(u64::from_ne_bytes(bytes[..8].try_into().unwrap()));
         bytes = &bytes[8..];
     }
 
     if bytes.len() >= 4 {
-        hash.hash_word(u64::from(NativeEndian::read_u32(bytes)));
+        hash.hash_word(u64::from(u32::from_ne_bytes(bytes[..4].try_into().unwrap())));
         bytes = &bytes[4..];
     }
 
     if bytes.len() >= 2 {
-        hash.hash_word(u64::from(NativeEndian::read_u16(bytes)));
+        hash.hash_word(u64::from(u16::from_ne_bytes(bytes[..2].try_into().unwrap())));
         bytes = &bytes[2..];
     }
 
