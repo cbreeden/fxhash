@@ -397,3 +397,13 @@ pub fn hash<T: Hash + ?Sized>(v: &T) -> usize {
     v.hash(&mut state);
     state.finish() as usize
 }
+
+/// A const function for when you need a 32-bit hash of a byte array.
+pub const fn hash32_bytes(v: &[u8]) -> u32 {
+    write32(0, v)
+}
+
+/// A const function for when you need a 64-bit hash of a byte array.
+pub const fn hash64_bytes(v: &[u8]) -> u32 {
+    write32(0, v)
+}
