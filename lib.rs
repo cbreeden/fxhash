@@ -28,8 +28,6 @@
 use std::collections::{HashMap, HashSet};
 use std::default::Default;
 use std::hash::{BuildHasherDefault, Hash, Hasher};
-use std::ops::BitXor;
-use std::convert::TryInto;
 
 /// A builder for default Fx hashers.
 pub type FxBuildHasher = BuildHasherDefault<FxHasher>;
@@ -59,73 +57,137 @@ trait HashWord {
     fn hash_word(&mut self, Self);
 }
 
-macro_rules! impl_hash_word {
-    ($($ty:ty = $key:ident),* $(,)*) => (
-        $(
-            impl HashWord for $ty {
-                #[inline]
-                fn hash_word(&mut self, word: Self) {
-                    *self = self.rotate_left(ROTATE).bitxor(word).wrapping_mul($key);
-                }
-            }
-        )*
-    )
+#[inline]
+const fn hash_word_32(mut hash: u32, word: u32) -> u32 {
+    hash = hash.rotate_left(ROTATE);
+    hash = hash ^ word;
+    hash = hash.wrapping_mul(SEED32);
+    hash
 }
 
-impl_hash_word!(usize = SEED, u32 = SEED32, u64 = SEED64);
+impl HashWord for u32 {
+    #[inline]
+    fn hash_word(&mut self, word: Self) {
+        *self = hash_word_32(*self, word);
+    }
+}
 
 #[inline]
-fn write32(mut hash: u32, mut bytes: &[u8]) -> u32 {
-    while bytes.len() >= 4 {
-        hash.hash_word(u32::from_ne_bytes(bytes[..4].try_into().unwrap()));
-        bytes = &bytes[4..];
+const fn write32(mut hash: u32, bytes: &[u8]) -> u32 {
+    let mut cursor = 0;
+
+    while bytes.len() - cursor >= 4 {
+        let word = u32::from_ne_bytes([
+            bytes[cursor],
+            bytes[cursor+1],
+            bytes[cursor+2],
+            bytes[cursor+3]
+        ]);
+        hash = hash_word_32(hash, word);
+        cursor += 4;
     }
 
-    if bytes.len() >= 2 {
-        hash.hash_word(u32::from(u16::from_ne_bytes(bytes[..2].try_into().unwrap())));
-        bytes = &bytes[2..];
+    if bytes.len() - cursor >= 2 {
+        let word = u16::from_ne_bytes([
+            bytes[cursor],
+            bytes[cursor+1]
+        ]);
+        hash = hash_word_32(hash, word as u32);
+        cursor += 2;
     }
 
-    if let Some(&byte) = bytes.first() {
-        hash.hash_word(u32::from(byte));
+    if bytes.len() - cursor >= 1 {
+        hash = hash_word_32(hash, bytes[cursor] as u32);
     }
 
     hash
 }
 
 #[inline]
-fn write64(mut hash: u64, mut bytes: &[u8]) -> u64 {
-    while bytes.len() >= 8 {
-        hash.hash_word(u64::from_ne_bytes(bytes[..8].try_into().unwrap()));
-        bytes = &bytes[8..];
+const fn hash_word_64(mut hash: u64, word: u64) -> u64 {
+    hash = hash.rotate_left(ROTATE);
+    hash = hash ^ word;
+    hash = hash.wrapping_mul(SEED64);
+    hash
+}
+
+impl HashWord for u64 {
+    #[inline]
+    fn hash_word(&mut self, word: Self) {
+        *self = hash_word_64(*self, word);
+    }
+}
+
+#[inline]
+const fn write64(mut hash: u64, bytes: &[u8]) -> u64 {
+    let mut cursor = 0;
+
+    while bytes.len() - cursor >= 8 {
+        let word = u64::from_ne_bytes([
+            bytes[cursor],
+            bytes[cursor+1],
+            bytes[cursor+2],
+            bytes[cursor+3],
+            bytes[cursor+4],
+            bytes[cursor+5],
+            bytes[cursor+6],
+            bytes[cursor+7],
+        ]);
+        hash = hash_word_64(hash, word);
+        cursor += 8;
     }
 
-    if bytes.len() >= 4 {
-        hash.hash_word(u64::from(u32::from_ne_bytes(bytes[..4].try_into().unwrap())));
-        bytes = &bytes[4..];
+    while bytes.len() - cursor >= 4 {
+        let word = u32::from_ne_bytes([
+            bytes[cursor],
+            bytes[cursor+1],
+            bytes[cursor+2],
+            bytes[cursor+3]
+        ]);
+        hash = hash_word_64(hash, word as u64);
+        cursor += 4;
     }
 
-    if bytes.len() >= 2 {
-        hash.hash_word(u64::from(u16::from_ne_bytes(bytes[..2].try_into().unwrap())));
-        bytes = &bytes[2..];
+    if bytes.len() - cursor >= 2 {
+        let word = u16::from_ne_bytes([
+            bytes[cursor],
+            bytes[cursor+1]
+        ]);
+        hash = hash_word_64(hash, word as u64);
+        cursor += 2;
     }
 
-    if let Some(&byte) = bytes.first() {
-        hash.hash_word(u64::from(byte));
+    if bytes.len() - cursor >= 1 {
+        hash = hash_word_64(hash, bytes[cursor] as u64);
     }
 
     hash
+}
+
+#[inline]
+const fn hash_word(mut hash: usize, word: usize) -> usize {
+    hash = hash.rotate_left(ROTATE);
+    hash = hash ^ word;
+    hash = hash.wrapping_mul(SEED);
+    hash
+}
+
+impl HashWord for usize {
+    #[inline]
+    fn hash_word(&mut self, word: Self) {
+        *self = hash_word(*self, word);
+    }
 }
 
 #[inline]
 #[cfg(target_pointer_width = "32")]
-fn write(hash: usize, bytes: &[u8]) -> usize {
+const fn write(hash: usize, bytes: &[u8]) -> usize {
     write32(hash as u32, bytes) as usize
 }
 
 #[inline]
 #[cfg(target_pointer_width = "64")]
-fn write(hash: usize, bytes: &[u8]) -> usize {
+const fn write(hash: usize, bytes: &[u8]) -> usize {
     write64(hash as u64, bytes) as usize
 }
 
